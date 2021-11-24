@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 import datetime as dt
 from .models import Article
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.http.response import Http404
 
@@ -48,3 +49,10 @@ def search_results(request):
     else:
         message = "You haven't searched for any term"
         return render(request, 'all-news/search.html',{"message":message})
+
+def article(request, article_id):
+    try:
+        article = Article.objects.get(id = article_id)
+    except ObjectDoesNotExist: #need to import from django.core
+        raise Http404()
+    return render(request, 'all-news/article.html', {"article":article})

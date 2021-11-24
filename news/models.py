@@ -36,6 +36,7 @@ class Article(models.Model):
     editor = models.ForeignKey('Editor', on_delete=models.DO_NOTHING)#from django 2.0 on_delete is required
     tags = models.ManyToManyField(tags)
     pub_date = models.DateTimeField(auto_now=True)
+    article_image = models.ImageField(upload_to = 'articles/')# you have to add a null value otherwise django will ask you to so as to make the migration
 
 
     @classmethod
