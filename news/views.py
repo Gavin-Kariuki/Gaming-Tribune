@@ -1,7 +1,7 @@
 from django.http import HttpResponse, Http404,HttpResponseRedirect
 from django.shortcuts import redirect, render
 import datetime as dt
-
+from .email import send_welcome_email
 from news.models import NewsLetterRecipients
 from .forms import NewsLetterForm
 from django.http.response import Http404
@@ -19,6 +19,7 @@ def news_of_day(request):
             email = form.cleaned_data['email']
             recipient = NewsLetterRecipients(name = name,email = email)
             recipient.save()
+            send_welcome_email(name,email)
             HttpResponseRedirect('news_of_day')
     else:
         form = NewsLetterForm()
