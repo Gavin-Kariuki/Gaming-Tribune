@@ -25,4 +25,10 @@ class Article(models.Model):
     tags = models.ManyToManyField(tags)
     pub_date = models.DateTimeField(auto_now=True)
 
+class NewsLetterRecipients(models.Model):
+    name = models.CharField(max_length=30)
+    email = models.EmailField()
+
+
+
 
