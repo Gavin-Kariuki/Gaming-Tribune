@@ -1,6 +1,9 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404,HttpResponseRedirect
 from django.shortcuts import redirect, render
 import datetime as dt
+from .email import send_welcome_email
+from news.models import NewsLetterRecipients
+from .forms import NewsLetterForm
 from .models import Article
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -12,6 +15,18 @@ def welcome(request):
 
 def news_today(request):
     date = dt.date.today()
+    if request.method == 'POST':
+        form = NewsLetterForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['email'] #cleaned-data property is a dictionary that saves values of the form.
+            email = form.cleaned_data['email']
+            recipient = NewsLetterRecipients(name = name,email = email)
+            recipient.save()
+            send_welcome_email(name,email)
+            HttpResponseRedirect('news_of_day')
+    else:
+        form = NewsLetterForm()
+    return render(request, 'all-news/today-news.html', {"date": date,"letterForm": form,})
     news = Article.todays_news()
     return render(request, 'all-news/today-news.html', {"date": date,"news":news})
 
@@ -30,6 +45,9 @@ def past_days_news(request,past_date):
         return redirect(news_today)
 
     
+    return render(request, 'all-news/past-news.html', {"date": date})
+
+
     news = Article.days_news(date)
     return render(request, 'all-news/past-news.html', {"date": date, "news":news})
 

@@ -1,3 +1,18 @@
+{%extends 'all-news/base.html'%}
+{% load bootstrap3 %}
+<!-- Some content here -->
+
+<!-- Looping through news end -->
+<div class="container-fluid">
+    <form action="{%url 'newsToday'%}" method="post">
+    {%csrf_token%}
+
+    {% boostrap_form letterForm layout='inline' %}
+    <input type="submit" value="Subscribe">
+    </form>
+</div>
+
+<!-- {{block.super}}  it allows us to use any content that was defined inside a block in the parent template-->
 {%extends 'all-news/base.html'%} {% block content %} {{block.super}}
 <!-- it allows us to use any content that was defined inside a block in the parent template-->
 <div class="container">
