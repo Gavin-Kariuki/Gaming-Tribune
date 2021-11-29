@@ -6,8 +6,10 @@ from news.models import NewsLetterRecipients
 from .forms import NewsLetterForm
 from .models import Article
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.contrib.auth.decorators import login_required
 from django.http.response import Http404
+
+
 
 # Create your views here.
 def welcome(request):
@@ -15,6 +17,7 @@ def welcome(request):
 
 def news_today(request):
     date = dt.date.today()
+    news = Article.todays_news()
     if request.method == 'POST':
         form = NewsLetterForm(request.POST)
         if form.is_valid():
@@ -26,12 +29,10 @@ def news_today(request):
             HttpResponseRedirect('news_of_day')
     else:
         form = NewsLetterForm()
-    return render(request, 'all-news/today-news.html', {"date": date,"letterForm": form,})
-    news = Article.todays_news()
-    return render(request, 'all-news/today-news.html', {"date": date,"news":news})
+    return render(request, 'all-news/today-news.html', {"date": date,"news":news,"letterForm": form,})
 
 def past_days_news(request,past_date):
-
+    
     try:
         # Converts data from string Url
         date = dt.datetime.strptime(past_date, '%Y-%m-%d').date()
@@ -42,14 +43,12 @@ def past_days_news(request,past_date):
         assert False
 
     if date == dt.date.today():
+        
         return redirect(news_today)
 
-    
-    return render(request, 'all-news/past-news.html', {"date": date})
-
-
     news = Article.days_news(date)
-    return render(request, 'all-news/past-news.html', {"date": date, "news":news})
+    return render(request, 'all-news/past-news.html', {"date": date,"news":news})
+
 
 def news_today(request):
     date = dt.date.today()
@@ -68,6 +67,7 @@ def search_results(request):
         message = "You haven't searched for any term"
         return render(request, 'all-news/search.html',{"message":message})
 
+@login_required(login_url='/accounts/login')
 def article(request, article_id):
     try:
         article = Article.objects.get(id = article_id)

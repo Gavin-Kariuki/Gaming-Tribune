@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 #MODE= os.environ.get("MODE",default="production")
 SECRET_KEY = os.environ.get('SECRET_KEY')
 #DEBUG = config('DEBUG', default=False, cast=bool)
-DEBUG = os.environ.get('DEBUG',False)
+DEBUG = os.environ.get('DEBUG',True)
 
 # development
 if config('MODE')=="dev":
@@ -116,14 +116,7 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'tribune',
-        'USER': 'esa',
-        'PASSWORD': 'moringa',
-    }
-}
+
 
 
 # Password validation
