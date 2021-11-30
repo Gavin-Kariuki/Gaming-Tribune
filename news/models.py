@@ -1,5 +1,6 @@
 from django.db import models
 import datetime as dt
+from django.contrib.auth.models import User
 
 
 
@@ -33,7 +34,7 @@ class tags(models.Model):
 class Article(models.Model):
     title = models.CharField(max_length=60)
     post = models.TextField()
-    editor = models.ForeignKey('Editor', on_delete=models.DO_NOTHING)#from django 2.0 on_delete is required
+    editor = models.ForeignKey(User, on_delete=models.CASCADE)#from django 2.0 on_delete is required
     tags = models.ManyToManyField(tags)
     pub_date = models.DateTimeField(auto_now=True)
     article_image = models.ImageField(upload_to = 'articles/')# you have to add a null value otherwise django will ask you to so as to make the migration
