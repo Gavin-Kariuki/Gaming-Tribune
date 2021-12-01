@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 import datetime as dt
 from .email import send_welcome_email
 from news.models import NewsLetterRecipients
-from .forms import NewsLetterForm
+from .forms import NewsLetterForm, NewArticleForm
 from .models import Article
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
@@ -74,3 +74,18 @@ def article(request, article_id):
     except ObjectDoesNotExist: #need to import from django.core
         raise Http404()
     return render(request, 'all-news/article.html', {"article":article})
+
+@login_required(login_url='/accounts/login')
+def new_article(request):
+    current_user = request.user
+    if request.method == "POST":
+        form = NewArticleForm(request.POST, request.FILES)
+        if form.is_valid():
+            article = form.save(commit=False)
+            article.editor = current_user
+            article.save()
+        return redirect('NewsToday')
+    
+    else:
+        form = NewArticleForm()
+    return render(request, 'new_article.html', {"form": form})
