@@ -7,7 +7,7 @@ from .forms import NewsLetterForm, NewArticleForm
 from .models import Article
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
-from django.http.response import Http404
+from django.http.response import Http404, JsonResponse
 
 
 
@@ -30,6 +30,16 @@ def news_today(request):
     else:
         form = NewsLetterForm()
     return render(request, 'all-news/today-news.html', {"date": date,"news":news,"letterForm": form,})
+
+def newletter(request):
+    name = request.POST.get('your_name')
+    email = request.POST.get('email')
+
+    recipient = NewsLetterRecipients(name=name, email=email)
+    recipient.save()
+    send_welcome_email(name, email)
+    data = {'success': 'You have been successfully added to the mailing list'}
+    return JsonResponse(data) # The JSON response will tell us the action ahs been completed successfully
 
 def past_days_news(request,past_date):
     
