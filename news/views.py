@@ -12,10 +12,14 @@ from .serializer import MerchSerializer
 from .models import  MoringaMerch
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
+#@csrf_exempt ## this is to allow postman access to the app
 def welcome(request):
     return render(request, 'welcome.html')
+
 
 def news_today(request):
     date = dt.date.today()
@@ -33,6 +37,7 @@ def news_today(request):
         form = NewsLetterForm()
     return render(request, 'all-news/today-news.html', {"date": date,"news":news,"letterForm": form,})
 
+
 def newsletter(request):
     name = request.POST.get('your_name')
     email = request.POST.get('email')
@@ -42,6 +47,8 @@ def newsletter(request):
     send_welcome_email(name, email)
     data = {'success': 'You have been successfully added to the mailing list'}
     return JsonResponse(data) # The JSON response will tell us the action ahs been completed successfully
+
+
 
 def past_days_news(request,past_date):
     
@@ -67,6 +74,7 @@ def news_today(request):
     news = Article.todays_news()
     return render(request, 'all-news/today-news.html', {"date": date,"news":news})
 
+
 def search_results(request):
 
     if 'article' in request.GET and request.GET["article"]:
@@ -79,6 +87,8 @@ def search_results(request):
         message = "You haven't searched for any term"
         return render(request, 'all-news/search.html',{"message":message})
 
+
+
 @login_required(login_url='/accounts/login')
 def article(request, article_id):
     try:
@@ -86,6 +96,7 @@ def article(request, article_id):
     except ObjectDoesNotExist: #need to import from django.core
         raise Http404()
     return render(request, 'all-news/article.html', {"article":article})
+
 
 @login_required(login_url='/accounts/login')
 def new_article(request):
@@ -102,8 +113,17 @@ def new_article(request):
         form = NewArticleForm()
     return render(request, 'all-news/new_article.html', {"form": form})
 
+
 class MerchList(APIView):
+
     def get(self, request, format=None):
         all_merch = MoringaMerch.objects.all()
         serializers = MerchSerializer(all_merch, many=True)
         return Response(serializers.data)
+
+    def post(self, request, format=None):
+        serializers = MerchSerializer(data=request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data, status=status.HTTP_201_CREATED)
+        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -45,5 +45,7 @@
 <!--End of the block content-->
 {% block scripts %} 
 {{block.super}}
-<script type="text/javascript" src="{%static 'js/newsletter.js'}"></script>
+<script type="text/javascript" src="{% static 'js/newsletter.js' %}"></script>
 {% endblock %}
+
+

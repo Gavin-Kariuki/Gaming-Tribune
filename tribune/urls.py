@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.conf.urls import url,include
 from django.contrib.auth import views
+from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -24,4 +25,5 @@ urlpatterns = [
     url(r'', include('news.urls')),
     url(r'^logout/$',views.LogoutView.as_view(),{'next_page':'/'}),
     url(r'^tinymce/', include('tinymce.urls')),
+    url(r'^api-token-auth/', obtain_auth_token),
 ]
