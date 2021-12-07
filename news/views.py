@@ -3,11 +3,11 @@ from django.shortcuts import redirect, render
 import datetime as dt
 from .email import send_welcome_email
 from news.models import NewsLetterRecipients
-from .forms import NewsLetterForm
+from .forms import NewsLetterForm, NewArticleForm
 from .models import Article
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
-from django.http.response import Http404
+from django.http.response import Http404, JsonResponse
 
 
 
@@ -30,6 +30,16 @@ def news_today(request):
     else:
         form = NewsLetterForm()
     return render(request, 'all-news/today-news.html', {"date": date,"news":news,"letterForm": form,})
+
+def newletter(request):
+    name = request.POST.get('your_name')
+    email = request.POST.get('email')
+
+    recipient = NewsLetterRecipients(name=name, email=email)
+    recipient.save()
+    send_welcome_email(name, email)
+    data = {'success': 'You have been successfully added to the mailing list'}
+    return JsonResponse(data) # The JSON response will tell us the action ahs been completed successfully
 
 def past_days_news(request,past_date):
     
@@ -74,3 +84,18 @@ def article(request, article_id):
     except ObjectDoesNotExist: #need to import from django.core
         raise Http404()
     return render(request, 'all-news/article.html', {"article":article})
+
+@login_required(login_url='/accounts/login')
+def new_article(request):
+    current_user = request.user
+    if request.method == "POST":
+        form = NewArticleForm(request.POST, request.FILES)
+        if form.is_valid():
+            article = form.save(commit=False)
+            article.editor = current_user
+            article.save()
+        return redirect('newsToday')
+    
+    else:
+        form = NewArticleForm()
+    return render(request, 'all-news/new_article.html', {"form": form})

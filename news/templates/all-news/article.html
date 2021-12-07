@@ -10,7 +10,8 @@
   </div>
 
   <div class="row">
-    <p>{{article.post}}</p>
+    <!-- auto escape is set to on because our post is saved as raw HTML and this will allow us to ignoew the HTML tags and render it as text-->
+    {% autoescape on %} {{article.post| safe}} {% endautoescape %}
   </div>
 
   <div class="row">
