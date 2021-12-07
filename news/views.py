@@ -31,7 +31,7 @@ def news_today(request):
         form = NewsLetterForm()
     return render(request, 'all-news/today-news.html', {"date": date,"news":news,"letterForm": form,})
 
-def newletter(request):
+def newsletter(request):
     name = request.POST.get('your_name')
     email = request.POST.get('email')
 
