@@ -8,8 +8,10 @@ from .models import Article
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.http.response import Http404, JsonResponse
-
-
+from .serializer import MerchSerializer
+from .models import  MoringaMerch
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 # Create your views here.
 def welcome(request):
@@ -99,3 +101,9 @@ def new_article(request):
     else:
         form = NewArticleForm()
     return render(request, 'all-news/new_article.html', {"form": form})
+
+class MerchList(APIView):
+    def get(self, request, format=None):
+        all_merch = MoringaMerch.objects.all()
+        serializers = MerchSerializer(all_merch, many=True)
+        return Response(serializers.data)
